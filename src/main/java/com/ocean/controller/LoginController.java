@@ -4,6 +4,7 @@ import com.ocean.entity.ResponseResult;
 import com.ocean.entity.User;
 import com.ocean.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,5 +20,11 @@ public class LoginController {
     public ResponseResult login(@RequestBody User user) {
 
         return loginService.login(user);
+    }
+
+    @RequestMapping("/logout")
+    public ResponseResult logout() {
+
+        return loginService.logout();
     }
 }

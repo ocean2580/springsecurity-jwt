@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class LoginServiceImpl implements LoginService {
     public ResponseResult login(User user) {
         // AM authenticate认证
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(user.getUserName(),user.getPassword());
+                new UsernamePasswordAuthenticationToken(user.getUserName(), user.getPassword());
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
 
         // 认证未通过则给出提示
@@ -42,12 +43,24 @@ public class LoginServiceImpl implements LoginService {
 
         String jwt = JwtUtil.createJWT(userid);
 
-        Map<String,String> map = new HashMap<>();
-        map.put("token",jwt);
+        Map<String, String> map = new HashMap<>();
+        map.put("token", jwt);
 
         // 完整用户信息存入redis, userid -> key
-        redisCache.setCacheObject("login:"+userid,loginUser);
+        redisCache.setCacheObject("login:" + userid, loginUser);
 
-        return new ResponseResult(200,"登录成功",map);
+        return new ResponseResult(200, "登录成功", map);
+    }
+
+    @Override
+    public ResponseResult logout() {
+        // 获取SecurityContextHolder中的id
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        Long id = loginUser.getUser().getId();
+
+        // 删除redis中的值
+        redisCache.deleteObject("login:" + id);
+        return new ResponseResult(200,"删除成功");
     }
 }
