@@ -34,7 +34,7 @@ public class LoginServiceImpl implements LoginService {
 
         // 认证未通过则给出提示
         if (Objects.isNull(authenticate)) {
-            throw new RuntimeException("");
+            throw new RuntimeException("登陆失败");
         }
         // 认证通过，userid -> jwt -> ResponseResult
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
