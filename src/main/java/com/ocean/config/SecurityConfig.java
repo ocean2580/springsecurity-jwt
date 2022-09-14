@@ -1,6 +1,7 @@
 package com.ocean.config;
 
 import com.ocean.filter.JwtAuthenticationTokenFilter;
+import com.ocean.handler.AuthenticationEntryPointImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
@@ -20,6 +22,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     @Autowired
     private JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter;
+
+    @Autowired
+    private AccessDeniedHandler accessDeniedHandler;
+
+    @Autowired
+    private AuthenticationEntryPointImpl authenticationEntryPoint;
 
     // 将 BCryptPasswordEncoder 注入到容器
     @Bean
@@ -48,7 +56,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated();
 
+        // 过滤器
         http.addFilterBefore(jwtAuthenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
+        // 异常处理
+        http.exceptionHandling()
+                // 认证失败处理器
+                .accessDeniedHandler(accessDeniedHandler)
+                .authenticationEntryPoint(authenticationEntryPoint);
     }
 
 }

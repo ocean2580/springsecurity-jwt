@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class HelloController {
 
     @RequestMapping("/hello")
-    @PreAuthorize("hasAuthority('test')") // 授权: 是否有test的权限
+    @PreAuthorize("hasAuthority('system:dept:list') || hasAuthority('system:test:list')") // 授权: 是否有(...)的权限
     public String hello() {
         return "hello";
     }
