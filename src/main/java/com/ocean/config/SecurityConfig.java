@@ -64,6 +64,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 // 认证失败处理器
                 .accessDeniedHandler(accessDeniedHandler)
                 .authenticationEntryPoint(authenticationEntryPoint);
+
+        // 允许跨域
+        http.cors();
+        
     }
 
 }
