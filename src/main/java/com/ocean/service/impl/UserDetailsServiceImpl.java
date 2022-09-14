@@ -3,6 +3,7 @@ package com.ocean.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ocean.entity.LoginUser;
 import com.ocean.entity.User;
+import com.ocean.mapper.MenuMapper;
 import com.ocean.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private MenuMapper menuMapper;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -32,9 +36,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new RuntimeException("用户名或密码错误");
         }
 
-        //TODO 查询对应权限信息
-        List<String> list = new ArrayList<>(Arrays.asList("test","admin"));
+        // 查询对应权限信息
+        List<String> permissionKeyList = menuMapper.selectPermsByUserId(user.getId());
 
-        return new LoginUser(user,list);
+        return new LoginUser(user,permissionKeyList);
     }
 }
